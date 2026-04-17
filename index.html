@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamer X Cloud - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-cyan: #00d4ff;
+            --neon-blue: #0099ff;
+            --neon-purple: #b400ff;
+            --neon-pink: #ff00ea;
+            --neon-orange: #ff9500;
+            --neon-red: #ff3333;
+            --dark-bg: #050818;
+        }
+
+        html, body {
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+            background: radial-gradient(ellipse at top, #1a0d3d 0%, #050818 50%, #000000 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            color: #fff;
+        }
+
+        /* Animated grid floor */
+        .grid-floor {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) perspective(500px) rotateX(60deg);
+            width: 200%;
+            height: 60vh;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.4) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.4) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridScroll 8s linear infinite;
+            transform-origin: center bottom;
+            z-index: 0;
+            mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+            pointer-events: none;
+        }
+
+        @keyframes gridScroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 60px; }
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .orb-1 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, var(--neon-cyan), transparent 70%);
+            top: 10%; left: 5%;
+            animation: orbFloat1 18s ease-in-out infinite;
+        }
+        .orb-2 {
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, var(--neon-purple), transparent 70%);
+            bottom: 10%; right: 5%;
+            animation: orbFloat2 22s ease-in-out infinite;
+        }
+        .orb-3 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, var(--neon-pink), transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation: orbFloat3 25s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes orbFloat1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(80px, -60px) scale(1.1); }
+            66% { transform: translate(-50px, 80px) scale(0.95); }
+        }
+        @keyframes orbFloat2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-70px, 50px) scale(1.15); }
+            66% { transform: translate(60px, -40px) scale(0.9); }
+        }
+        @keyframes orbFloat3 {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        /* Stars */
+        .stars { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 4px white;
+            animation: twinkle 3s infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* Shooting stars */
+        .shooting-star {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px white;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .shooting-star::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 200px;
+            height: 1px;
+            background: linear-gradient(90deg, white, transparent);
+            transform-origin: left center;
+        }
+
+        /* Particles canvas */
+        #particleCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1100px;
+            padding: 30px;
+        }
+
+        /* ===== LOGIN BOX ===== */
+        .login-box {
+            position: relative;
+            background: linear-gradient(135deg, rgba(20, 30, 70, 0.85), rgba(40, 15, 80, 0.75));
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 28px;
+            padding: 60px 50px;
+            max-width: 520px;
+            margin: 0 auto;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.5),
+                0 0 80px rgba(0, 212, 255, 0.25),
+                inset 0 0 30px rgba(0, 212, 255, 0.05);
+            animation: boxAppear 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        /* Animated gradient border */
+        .login-box::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: conic-gradient(
+                from 0deg,
+                var(--neon-cyan),
+                var(--neon-purple),
+                var(--neon-pink),
+                var(--neon-cyan)
+            );
+            border-radius: 28px;
+            z-index: -1;
+            animation: rotateBorder 6s linear infinite;
+            filter: blur(2px);
+            opacity: 0.8;
+        }
+
+        .login-box::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(20, 30, 70, 0.95), rgba(40, 15, 80, 0.9));
+            border-radius: 28px;
+            z-index: -1;
+        }
+
+        @keyframes rotateBorder {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes boxAppear {
+            from { opacity: 0; transform: translateY(60px) scale(0.9) rotateX(20deg); }
+            to { opacity: 1; transform: translateY(0) scale(1) rotateX(0); }
+        }
+
+        /* Scan line effect */
+        .login-box .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            animation: scanMove 4s linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes scanMove {
+            0% { top: 0; opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .logo-icon {
+            display: inline-block;
+            font-size: 50px;
+            margin-bottom: 10px;
+            animation: logoFloat 3s ease-in-out infinite, logoRotate 8s linear infinite;
+            filter: drop-shadow(0 0 20px var(--neon-cyan));
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes logoRotate {
+            0%, 90%, 100% { filter: drop-shadow(0 0 20px var(--neon-cyan)); }
+            45% { filter: drop-shadow(0 0 30px var(--neon-purple)); }
+        }
+
+        .logo h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink), var(--neon-cyan));
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 4s linear infinite, logoGlow 2s ease-in-out infinite;
+            margin-bottom: 12px;
+        }
+
+        @keyframes gradientText {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6)); }
+            50% { filter: drop-shadow(0 0 20px rgba(180, 0, 255, 0.8)); }
+        }
+
+        .logo p {
+            color: var(--neon-cyan);
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .logo p::before, .logo p::after {
+            content: '◆';
+            margin: 0 10px;
+            color: var(--neon-purple);
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.2s; }
+        .form-group:nth-child(2) { animation-delay: 0.35s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label {
+            display: block;
+            color: var(--neon-cyan);
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .input-wrapper:focus-within::before {
+            opacity: 1;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 16px 18px;
+            border: 2px solid rgba(0, 212, 255, 0.25);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+            font-size: 15px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            outline: none;
+            letter-spacing: 0.5px;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        input:focus {
+            border-color: transparent;
+            background: rgba(0, 212, 255, 0.08);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.4), inset 0 0 10px rgba(0, 212, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 15px;
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue), var(--neon-purple));
+            background-size: 200% 100%;
+            color: #000;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4), 0 0 30px rgba(0, 212, 255, 0.2);
+            animation: buttonPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4), 0 0 30px rgba(0, 212, 255, 0.2); }
+            50% { box-shadow: 0 4px 30px rgba(0, 212, 255, 0.6), 0 0 50px rgba(180, 0, 255, 0.3); }
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-login:hover::before { left: 100%; }
+        .btn-login:hover {
+            transform: translateY(-4px) scale(1.02);
+            background-position: 100% 0;
+            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.7), 0 0 60px rgba(180, 0, 255, 0.5);
+        }
+        .btn-login:active { transform: translateY(-1px); }
+
+        .error {
+            color: var(--neon-red);
+            font-size: 13px;
+            margin-top: 12px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 16px;
+        }
+        .error:not(:empty) { animation: shake 0.5s ease-in-out; text-shadow: 0 0 10px var(--neon-red); }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .success {
+            color: var(--neon-cyan);
+            font-size: 13px;
+            margin-top: 12px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 16px;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+        .success:not(:empty) { animation: successPop 0.5s ease-out; }
+
+        @keyframes successPop {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ===== ULTIMATE WELCOME OVERLAY ===== */
+        .welcome-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(20, 0, 60, 0.95), rgba(0, 0, 0, 0.98));
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .welcome-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .welcome-overlay .ring {
+            position: absolute;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 50%;
+            opacity: 0;
+            box-shadow: 0 0 40px var(--neon-cyan), inset 0 0 40px var(--neon-cyan);
+        }
+
+        .welcome-overlay.active .ring {
+            animation: ringExpand 2s ease-out forwards;
+        }
+
+        .welcome-overlay .ring:nth-child(1) { animation-delay: 0s !important; }
+        .welcome-overlay .ring:nth-child(2) { animation-delay: 0.3s !important; border-color: var(--neon-purple); box-shadow: 0 0 40px var(--neon-purple), inset 0 0 40px var(--neon-purple); }
+        .welcome-overlay .ring:nth-child(3) { animation-delay: 0.6s !important; border-color: var(--neon-pink); box-shadow: 0 0 40px var(--neon-pink), inset 0 0 40px var(--neon-pink); }
+
+        @keyframes ringExpand {
+            0% { width: 100px; height: 100px; opacity: 1; }
+            100% { width: 1200px; height: 1200px; opacity: 0; }
+        }
+
+        .welcome-content {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            transform: scale(0);
+            animation: welcomeContentIn 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+        }
+
+        @keyframes welcomeContentIn {
+            to { transform: scale(1); }
+        }
+
+        .welcome-emoji {
+            font-size: 100px;
+            display: inline-block;
+            animation: emojiSpin 2s ease-out, emojiFloat 3s ease-in-out 2s infinite;
+            filter: drop-shadow(0 0 30px var(--neon-cyan));
+        }
+
+        @keyframes emojiSpin {
+            0% { transform: scale(0) rotate(-720deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes emojiFloat {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .welcome-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 72px;
+            font-weight: 900;
+            margin: 20px 0;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink), var(--neon-cyan));
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 3s linear infinite;
+            letter-spacing: 4px;
+            text-shadow: 0 0 60px rgba(0, 212, 255, 0.5);
+            opacity: 0;
+            animation: welcomeTitleIn 0.8s ease-out 0.8s forwards, gradientText 3s linear 1.6s infinite;
+        }
+
+        @keyframes welcomeTitleIn {
+            from { opacity: 0; transform: translateY(30px); letter-spacing: 20px; }
+            to { opacity: 1; transform: translateY(0); letter-spacing: 4px; }
+        }
+
+        .welcome-username {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 30px var(--neon-cyan);
+            opacity: 0;
+            animation: welcomeUserIn 0.8s ease-out 1.2s forwards;
+        }
+
+        .welcome-username .at { color: var(--neon-cyan); }
+
+        @keyframes welcomeUserIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .welcome-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+            opacity: 0;
+            animation: welcomeSubIn 0.8s ease-out 1.5s forwards;
+        }
+
+        @keyframes welcomeSubIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 0.8; transform: translateY(0); }
+        }
+
+        .welcome-loader {
+            margin-top: 40px;
+            width: 300px;
+            height: 4px;
+            background: rgba(0, 212, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            opacity: 0;
+            animation: welcomeSubIn 0.8s ease-out 1.8s forwards;
+        }
+
+        .welcome-loader-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+            box-shadow: 0 0 20px var(--neon-cyan);
+            animation: loaderFill 1.5s ease-out 2s forwards;
+        }
+
+        @keyframes loaderFill {
+            to { width: 100%; }
+        }
+
+        .welcome-status {
+            margin-top: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            letter-spacing: 4px;
+            color: var(--neon-cyan);
+            opacity: 0;
+            animation: welcomeSubIn 0.8s ease-out 2s forwards;
+        }
+
+        /* Confetti / particle burst */
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            opacity: 0;
+        }
+
+        /* ===== DASHBOARD ===== */
+        .dashboard-box {
+            position: relative;
+            background: linear-gradient(135deg, rgba(20, 30, 70, 0.85), rgba(40, 15, 80, 0.75));
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 28px;
+            padding: 60px 50px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.5),
+                0 0 80px rgba(0, 212, 255, 0.25),
+                inset 0 0 30px rgba(0, 212, 255, 0.05);
+            animation: boxAppear 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        .dashboard-box::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink), var(--neon-cyan));
+            border-radius: 28px;
+            z-index: -1;
+            animation: rotateBorder 8s linear infinite;
+            filter: blur(2px);
+            opacity: 0.7;
+        }
+        .dashboard-box::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(20, 30, 70, 0.95), rgba(40, 15, 80, 0.92));
+            border-radius: 28px;
+            z-index: -1;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .welcome-msg {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            animation: textGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5)); }
+            50% { filter: drop-shadow(0 0 20px rgba(180, 0, 255, 0.8)); }
+        }
+
+        .btn-logout {
+            padding: 14px 30px;
+            border: 2px solid rgba(255, 51, 51, 0.6);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--neon-red), #cc0000);
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.4);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .btn-logout::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+        .btn-logout:hover::before { left: 100%; }
+        .btn-logout:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 0 40px rgba(255, 51, 51, 0.8);
+        }
+
+        .dashboard-section {
+            margin-top: 40px;
+            padding: 35px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 18px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            animation: scanMove 3s linear infinite;
+        }
+
+        .dashboard-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            font-size: 22px;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 3px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        /* ===== TIER BUTTONS ===== */
+        .tiers-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            perspective: 1500px;
+        }
+
+        .tier-btn {
+            padding: 35px 25px;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 18px;
+            background: rgba(0, 212, 255, 0.05);
+            color: var(--neon-cyan);
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            transform-style: preserve-3d;
+            font-family: 'Rajdhani', sans-serif;
+            animation: tierAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+        }
+
+        .tier-btn:nth-child(1) { animation-delay: 0.1s; }
+        .tier-btn:nth-child(2) { animation-delay: 0.2s; }
+        .tier-btn:nth-child(3) { animation-delay: 0.3s; }
+        .tier-btn:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes tierAppear {
+            from { opacity: 0; transform: translateY(40px) rotateX(-30deg); }
+            to { opacity: 1; transform: translateY(0) rotateX(0); }
+        }
+
+        .tier-icon {
+            font-size: 40px;
+            transition: transform 0.4s ease;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+
+        .tier-btn:hover .tier-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .tier-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .tier-status {
+            font-size: 11px;
+            opacity: 0.8;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tier-btn.enabled {
+            border-color: var(--neon-cyan);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4), inset 0 0 20px rgba(0, 212, 255, 0.1);
+        }
+
+        .tier-btn.enabled::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .tier-btn.enabled:hover {
+            transform: translateY(-12px) scale(1.05) rotateX(8deg);
+            box-shadow: 0 20px 50px rgba(0, 212, 255, 0.6), 0 0 60px rgba(0, 212, 255, 0.4);
+            border-color: #fff;
+        }
+
+        .tier-btn.locked {
+            border-color: rgba(255, 165, 0, 0.6);
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.12), rgba(255, 165, 0, 0.04));
+            color: var(--neon-orange);
+            box-shadow: 0 0 25px rgba(255, 165, 0, 0.2);
+        }
+
+        .tier-btn.locked:hover {
+            transform: translateY(-10px) scale(1.04) rotateX(8deg);
+            box-shadow: 0 15px 40px rgba(255, 165, 0, 0.5), 0 0 50px rgba(255, 165, 0, 0.4);
+            border-color: var(--neon-orange);
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .stat-card {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 10px var(--neon-cyan));
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .login-box, .dashboard-box {
+                padding: 40px 25px;
+            }
+            .logo h1 { font-size: 24px; }
+            .welcome-title { font-size: 44px; }
+            .welcome-username { font-size: 24px; }
+            .welcome-emoji { font-size: 70px; }
+            .dashboard-header { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-floor"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="stars" id="starsContainer"></div>
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- ULTIMATE WELCOME OVERLAY -->
+    <div class="welcome-overlay" id="welcomeOverlay">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="welcome-content">
+            <div class="welcome-emoji">🚀</div>
+            <div class="welcome-title">WELCOME</div>
+            <div class="welcome-username">@<span id="welcomeUserName">user</span></div>
+            <div class="welcome-subtitle">◆ Access Granted • System Online ◆</div>
+            <div class="welcome-loader"><div class="welcome-loader-fill"></div></div>
+            <div class="welcome-status" id="welcomeStatus">INITIALIZING SECURE SESSION...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- LOGIN SECTION -->
+        <div id="loginSection" class="login-box">
+            <div class="scan-line"></div>
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                <h1>STREAMER X CLOUD</h1>
+                <p>Premium Streaming Platform</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginId">◆ Login ID</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="loginId" placeholder="Enter your username" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">◆ Password or License Key</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="loginPassword" placeholder="Enter password or license key" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login">🚀 Initialize Login</button>
+
+                <div id="loginError" class="error"></div>
+                <div id="loginSuccess" class="success"></div>
+            </form>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboardSection" class="dashboard-box" style="display: none;">
+            <div class="dashboard-header">
+                <div class="welcome-msg" id="welcomeMsg"></div>
+                <button type="button" class="btn-logout" onclick="handleLogout()">🔓 Logout</button>
+            </div>
+
+            <div class="dashboard-section">
+                <div class="dashboard-title">⭐ YOUR STREAMING TIERS</div>
+                <div class="tiers-container" id="tiersContainer"></div>
+            </div>
+
+            <div class="dashboard-section">
+                <div class="dashboard-title">📊 LIVE DASHBOARD</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🟢</div>
+                        <div class="stat-value">ONLINE</div>
+                        <div class="stat-label">Status</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-value" id="statPing">12ms</div>
+                        <div class="stat-label">Ping</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🛡️</div>
+                        <div class="stat-value">SECURE</div>
+                        <div class="stat-label">Connection</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🌐</div>
+                        <div class="stat-value" id="statRegion">GLOBAL</div>
+                        <div class="stat-label">Region</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== Backend logic preserved =====
+        let licenseKeys = JSON.parse(localStorage.getItem('streamerXCloudLicenseKeys')) || [];
+
+        let users = JSON.parse(localStorage.getItem('streamerXCloudUsers')) || [
+            { id: 'admin', password: 'admin123', blocked: false, hwidLock: false, deviceLock: false, lockedHwid: null, lockedDevice: null, loginSessions: [] },
+            { id: 'streamer', password: 'stream456', blocked: false, hwidLock: false, deviceLock: false, lockedHwid: null, lockedDevice: null, loginSessions: [] },
+            { id: 'user', password: 'pass789', blocked: false, hwidLock: false, deviceLock: false, lockedHwid: null, lockedDevice: null, loginSessions: [] }
+        ];
+
+        let currentUser = null;
+        let currentHwid = generateClientHwid();
+        let currentDeviceId = getOrCreateDeviceId();
+        let currentFingerprint = generateAdvancedFingerprint();
+        let userIP = '0.0.0.0';
+        let sessionToken = generateSessionToken();
+
+        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1494261833937453107/mAEgZ9pbTsUEJatM43Xc4c6UnkU0C5d23SX9ZAhtvxVK3tQ29zyeSvu5i3_2jPCBw-n4';
+
+        // ===== Stars =====
+        function generateStars() {
+            const starsContainer = document.getElementById('starsContainer');
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2 + 0.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                starsContainer.appendChild(star);
+            }
+            // Periodic shooting stars
+            setInterval(spawnShootingStar, 4000);
+        }
+
+        function spawnShootingStar() {
+            const star = document.createElement('div');
+            star.className = 'shooting-star';
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight * 0.5;
+            star.style.left = startX + 'px';
+            star.style.top = startY + 'px';
+            const angle = 30 + Math.random() * 30;
+            star.style.transform = `rotate(${angle}deg)`;
+            star.style.transition = 'transform 1.2s linear, opacity 1.2s linear';
+            document.body.appendChild(star);
+            requestAnimationFrame(() => {
+                star.style.transform = `rotate(${angle}deg) translateX(800px)`;
+                star.style.opacity = '0';
+            });
+            setTimeout(() => star.remove(), 1300);
+        }
+
+        // ===== Particle canvas =====
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.color = ['#00d4ff', '#b400ff', '#ff00ea'][Math.floor(Math.random() * 3)];
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 60; i++) particles.push(new Particle());
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Draw connections
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${0.15 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // ===== Confetti burst =====
+        function confettiBurst() {
+            const colors = ['#00d4ff', '#b400ff', '#ff00ea', '#ffcc00', '#00ff88'];
+            const overlay = document.getElementById('welcomeOverlay');
+            for (let i = 0; i < 80; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                c.style.left = '50%';
+                c.style.top = '50%';
+                c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                overlay.appendChild(c);
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 200 + Math.random() * 400;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                c.animate([
+                    { transform: 'translate(-50%, -50%) scale(0)', opacity: 1 },
+                    { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) rotate(${Math.random() * 720}deg) scale(1)`, opacity: 1, offset: 0.7 },
+                    { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty + 200}px)) rotate(${Math.random() * 720}deg) scale(0.5)`, opacity: 0 }
+                ], { duration: 2000, easing: 'cubic-bezier(0.4, 0, 0.6, 1)' });
+                setTimeout(() => c.remove(), 2100);
+            }
+        }
+
+        // ===== HWID & fingerprint (preserved) =====
+        function generateClientHwid() {
+            const hwid_string = navigator.userAgent + screen.width + 'x' + screen.height + navigator.language;
+            let hash = 0;
+            for (let i = 0; i < hwid_string.length; i++) {
+                const char = hwid_string.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return 'HWID-' + Math.abs(hash).toString(16).toUpperCase();
+        }
+
+        function getOrCreateDeviceId() {
+            let deviceId = localStorage.getItem('streamerXCloudDeviceId');
+            if (!deviceId) {
+                deviceId = 'DEV-' + Math.random().toString(36).substr(2, 9).toUpperCase() + '-' + Date.now();
+                localStorage.setItem('streamerXCloudDeviceId', deviceId);
+            }
+            return deviceId;
+        }
+
+        function generateAdvancedFingerprint() {
+            const c = document.createElement('canvas');
+            const cx = c.getContext('2d');
+            cx.textBaseline = 'top';
+            cx.font = '14px Arial';
+            cx.fillStyle = '#f60';
+            cx.fillRect(125, 1, 62, 20);
+            cx.fillStyle = '#069';
+            cx.fillText('Browser Fingerprint', 2, 15);
+            const fingerprint = navigator.userAgent + navigator.language + screen.width + screen.height + c.toDataURL().substring(0, 50);
+            return 'FP-' + simpleHash(fingerprint).substring(0, 16).toUpperCase();
+        }
+
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16);
+        }
+
+        function generateSessionToken() {
+            return 'SESSION-' + Math.random().toString(36).substr(2, 32).toUpperCase() + '-' + Date.now();
+        }
+
+        async function getUserIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                userIP = data.ip;
+            } catch (e) { userIP = 'unknown'; }
+        }
+
+        async function sendWebhookLog(username, status, reason = '') {
+            try {
+                const indiaTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+                const hwidStatus = currentUser && currentUser.hwidLock ? 'LOCKED' : 'UNLOCKED';
+                let description = `**User Login Report**\n\n`;
+                description += `👤 **Username:** ${username}\n`;
+                description += `🕒 **Time (India):** ${indiaTime}\n`;
+                description += `🔒 **HWID Status:** ${hwidStatus}\n`;
+                description += `🌐 **IP:** ${userIP}\n`;
+                description += `📱 **Device:** ${currentDeviceId}\n`;
+                description += `🖥️ **Fingerprint:** ${currentFingerprint}\n`;
+                description += `📊 **Status:** ${status}\n`;
+                if (reason) description += `⚠️ **Reason:** ${reason}\n`;
+
+                const embed = {
+                    title: status === 'SUCCESS' ? '✅ Successful Login' : '❌ Login Blocked',
+                    description: description,
+                    color: status === 'SUCCESS' ? 65280 : 16711680,
+                    timestamp: new Date().toISOString(),
+                    footer: { text: 'Streamer X Cloud Security Logger' }
+                };
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: `New ${status} Event`, embeds: [embed] })
+                });
+            } catch (e) {}
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const id = document.getElementById('loginId').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            const successDiv = document.getElementById('loginSuccess');
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+
+            const isLicenseKey = password.startsWith('STX-');
+            let user = null;
+
+            if (isLicenseKey) {
+                user = validateLicenseKey(id, password);
+                if (!user) {
+                    sendWebhookLog(id, 'FAILED', '❌ Invalid License Key');
+                    errorDiv.textContent = '✗ Invalid or expired license key';
+                    return;
+                }
+            } else {
+                user = users.find(u => u.id === id && u.password === password);
+                if (!user) {
+                    sendWebhookLog(id, 'FAILED', '❌ Invalid Credentials');
+                    errorDiv.textContent = '✗ Invalid ID or password';
+                    return;
+                }
+            }
+
+            if (user.blocked) {
+                sendWebhookLog(id, 'BLOCKED', '🚫 Account Blocked');
+                showBlockedAlert('🚫 Account Blocked', 'This account has been BLOCKED by administrator.');
+                return;
+            }
+            if (user.hwidLock && user.lockedHwid !== currentHwid) {
+                sendWebhookLog(id, 'BLOCKED', '❌ HWID Mismatch');
+                showBlockedAlert('❌ HWID Mismatch', 'Hardware ID does not match.');
+                return;
+            }
+            if (user.deviceLock && user.lockedDevice !== currentDeviceId) {
+                sendWebhookLog(id, 'BLOCKED', '🔐 Device Not Authorized');
+                showBlockedAlert('🔐 Device Not Registered', 'This device is not authorized.');
+                return;
+            }
+            if (user.deviceLock && !user.lockedDevice) {
+                user.lockedDevice = currentDeviceId;
+                localStorage.setItem('streamerXCloudUsers', JSON.stringify(users));
+            }
+
+            if (!user.loginSessions) user.loginSessions = [];
+            user.loginSessions.push({
+                timestamp: new Date().toISOString(),
+                ip: userIP,
+                fingerprint: currentFingerprint,
+                deviceId: currentDeviceId,
+                hwid: currentHwid,
+                authMethod: isLicenseKey ? 'LICENSE_KEY' : 'PASSWORD'
+            });
+            localStorage.setItem('streamerXCloudUsers', JSON.stringify(users));
+
+            currentUser = user;
+            sendWebhookLog(id, 'SUCCESS', isLicenseKey ? 'via License Key 🔑' : 'Authenticated 👤');
+            successDiv.textContent = '✓ Authentication successful! Initializing...';
+
+            setTimeout(() => {
+                playUltimateWelcome(user.id);
+            }, 600);
+        }
+
+        function validateLicenseKey(username, key) {
+            const licenseKey = licenseKeys.find(k => k.key === key);
+            if (!licenseKey || !licenseKey.active) return null;
+            if (new Date() > new Date(licenseKey.expiresAt)) return null;
+            if (licenseKey.username !== username) return null;
+            if (licenseKey.maxUses && licenseKey.uses >= licenseKey.maxUses) return null;
+            licenseKey.uses++;
+            localStorage.setItem('streamerXCloudLicenseKeys', JSON.stringify(licenseKeys));
+            let user = users.find(u => u.id === username);
+            if (!user) {
+                user = { id: username, password: 'key-based', blocked: false, hwidLock: false, deviceLock: false, lockedHwid: null, lockedDevice: null, loginSessions: [], keyBased: true };
+                users.push(user);
+                localStorage.setItem('streamerXCloudUsers', JSON.stringify(users));
+            }
+            return user;
+        }
+
+        function showBlockedAlert(title, message) {
+            alert(`${title}\n\n${message}\n\nYou will be redirected to the support page.`);
+            sessionStorage.setItem('blockedReason', `${title}\n\n${message}`);
+            setTimeout(() => { window.location.href = 'blocked.html'; }, 1000);
+        }
+
+        // ===== ULTIMATE WELCOME SEQUENCE =====
+        function playUltimateWelcome(username) {
+            const overlay = document.getElementById('welcomeOverlay');
+            document.getElementById('welcomeUserName').textContent = username;
+
+            // Reset rings
+            overlay.querySelectorAll('.ring').forEach(r => {
+                r.style.animation = 'none';
+                r.offsetHeight; // reflow
+                r.style.animation = '';
+            });
+
+            overlay.classList.add('active');
+
+            // Confetti at the start
+            setTimeout(confettiBurst, 600);
+            setTimeout(confettiBurst, 1200);
+
+            // Animated status text
+            const statuses = [
+                'INITIALIZING SECURE SESSION...',
+                'VERIFYING CREDENTIALS...',
+                'LOADING USER PROFILE...',
+                'SYNCING TIER ACCESS...',
+                'CONNECTION ESTABLISHED ✓'
+            ];
+            const statusEl = document.getElementById('welcomeStatus');
+            let idx = 0;
+            const statusInterval = setInterval(() => {
+                idx++;
+                if (idx >= statuses.length) {
+                    clearInterval(statusInterval);
+                    return;
+                }
+                statusEl.style.opacity = '0';
+                setTimeout(() => {
+                    statusEl.textContent = statuses[idx];
+                    statusEl.style.opacity = '1';
+                }, 200);
+            }, 600);
+
+            // Show dashboard after sequence
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                showDashboard();
+                document.getElementById('loginForm').reset();
+            }, 4200);
+        }
+
+        function showDashboard() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            document.getElementById('welcomeMsg').innerHTML = `🎉 Welcome back, <span style="color:#fff;text-shadow:0 0 15px var(--neon-cyan)">${currentUser.id}</span>`;
+            loadUserTiers();
+            // animated ping value
+            const pingEl = document.getElementById('statPing');
+            setInterval(() => {
+                pingEl.textContent = (8 + Math.floor(Math.random() * 15)) + 'ms';
+            }, 2000);
+        }
+
+        function loadUserTiers() {
+            const usersData = JSON.parse(localStorage.getItem('streamerXCloudUsers')) || [];
+            const user = usersData.find(u => u.id === currentUser.id);
+            const tiers = user?.tiers || { lite: false, pro: false, max: false, ultra: false };
+            const tiersContainer = document.getElementById('tiersContainer');
+            tiersContainer.innerHTML = '';
+
+            const tierData = [
+                { key: 'lite', label: 'STREAMER LITE', icon: '💎' },
+                { key: 'pro', label: 'STREAMER PRO', icon: '🔥' },
+                { key: 'max', label: 'STREAMER MAX', icon: '⚡' },
+                { key: 'ultra', label: 'STREAMER ULTRA', icon: '👑' }
+            ];
+
+            tierData.forEach(tier => {
+                const isEnabled = tiers[tier.key] || false;
+                const tierBtn = document.createElement('button');
+                tierBtn.type = 'button';
+                tierBtn.className = `tier-btn ${tier.key} ${isEnabled ? 'enabled' : 'locked'}`;
+                tierBtn.innerHTML = `
+                    <span class="tier-icon">${isEnabled ? tier.icon : '🔒'}</span>
+                    <span class="tier-label">${tier.label}</span>
+                    <span class="tier-status">${isEnabled ? '✓ ACTIVE' : '🔓 UPGRADE'}</span>
+                `;
+                tierBtn.onclick = () => isEnabled ? onTierClick(tier.key) : upgradeToTier(tier.key);
+                tiersContainer.appendChild(tierBtn);
+            });
+        }
+
+        function upgradeToTier(tierName) {
+            window.open('https://discord.gg/YpJt2qBSqC', '_blank');
+        }
+
+        function onTierClick(tierName) {
+            const tierLabels = { lite: 'STREAMER LITE', pro: 'STREAMER PRO', max: 'STREAMER MAX', ultra: 'STREAMER ULTRA' };
+            const tierPages = {
+                lite: '/streamer-lite-control.html',
+                pro: '/streamer-pro-control.html',
+                max: '/streamer-max-control.html',
+                ultra: '/streamer-ultra-control.html'
+            };
+            if (tierPages[tierName]) {
+                sessionStorage.setItem('currentTier', tierName);
+                window.location.href = tierPages[tierName];
+            } else {
+                alert(`✨ Welcome to ${tierLabels[tierName]}!`);
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                currentUser = null;
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('dashboardSection').style.display = 'none';
+                document.getElementById('loginForm').reset();
+            }
+        }
+
+        function goToAdmin() { window.location.href = 'admin.html'; }
+
+        window.addEventListener('load', () => {
+            generateStars();
+            getUserIP();
+        });
+    </script>
+</body>
+</html>

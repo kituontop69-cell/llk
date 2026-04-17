@@ -1,0 +1,42 @@
+{
+  "name": "streamer-x-discord-bot",
+  "version": "1.0.0",
+  "description": "Discord Bot for Streamer X Cloud - License Key Management & Deployment",
+  "main": "discord-bot.js",
+  "scripts": {
+    "start": "node discord-bot.js",
+    "dev": "node discord-bot.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "license-key",
+    "streamer-x-cloud"
+  ],
+  "author": "Streamer X Team",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

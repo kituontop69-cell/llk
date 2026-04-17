@@ -1,0 +1,86 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║                         🎯 QUICK REFERENCE CARD                              ║
+║                                                                                ║
+║                    DUAL URL SETUP - DEPLOY IN 3 MINUTES                       ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+🎁 WHAT YOU GET
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ CLIENT URL    → https://web-client-xxx.railway.app (users login here)
+✅ ADMIN URL     → https://web-admin-xxx.railway.app (admin dashboard here)
+✅ DISCORD BOT   → /genkey, /listkeys, /checkkey, /revokekey (24/7)
+✅ SHARED DB     → license_keys.json (all systems use same data)
+
+
+📦 DOWNLOAD THIS
+═══════════════════════════════════════════════════════════════════════════════
+
+Location: c:\Users\hp\Desktop\New folder\
+File: streamer-x-bot-DUAL-URL.zip
+Size: 0.052 MB
+
+
+🚀 THREE SIMPLE STEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: EXTRACT ZIP
+   Download: streamer-x-bot-DUAL-URL.zip
+   Right-click → Extract All
+   All 20 files extracted ✓
+
+STEP 2: UPLOAD TO GITHUB
+   Go to: https://github.com/[YOUR]/streamer-x-bot
+   Click: Add file → Upload files
+   Drag: All 20 files from extracted folder
+   Commit: "Deploy: dual URL - client + admin"
+   Push ✓
+
+STEP 3: WAIT FOR RAILWAY
+   Go to: https://railway.app
+   Click: Deployments tab
+   Status: SUCCESS (2-3 minutes) ✓
+
+
+🌍 COPY YOUR URLS (After Deployment)
+═══════════════════════════════════════════════════════════════════════════════
+
+From Railway Deployments:
+
+CLIENT URL: https://web-client-xxx.railway.app
+ADMIN URL: https://web-admin-xxx.railway.app
+
+Share CLIENT URL with everyone
+Keep ADMIN URL private
+
+
+✅ YOU'RE DONE!
+═══════════════════════════════════════════════════════════════════════════════
+
+That's it! Your system is now:
+   ✓ LIVE 24/7
+   ✓ TWO professional URLs
+   ✓ Bot working
+   ✓ Database persistent
+   ✓ Production-ready
+
+
+🔗 LINKS TO SHARE
+═══════════════════════════════════════════════════════════════════════════════
+
+With CLIENTS:
+   "Visit: https://web-client-xxx.railway.app to join"
+
+With ADMINS:
+   "Admin panel: https://web-admin-xxx.railway.app"
+
+DISCORD BOT:
+   "Use: /genkey username:name to get key"
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EVERYTHING IS READY! 🚀 Deploy now and go live!

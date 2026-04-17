@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamer X Cloud - Access Blocked</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f4b 50%, #0d1b3d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .glowing-line {
+            position: fixed;
+            background: linear-gradient(90deg, transparent, #ff3333, transparent);
+            animation: moveLine 8s infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes moveLine {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        .blocked-box {
+            background: rgba(50, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 51, 51, 0.5);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 8px 32px 0 rgba(255, 51, 51, 0.3);
+            animation: slideIn 0.8s ease-out;
+            text-align: center;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .blocked-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .blocked-title {
+            font-size: 32px;
+            color: #ff3333;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(255, 51, 51, 0.5);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .blocked-reason {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 20px 0;
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timer-box {
+            background: rgba(255, 51, 51, 0.1);
+            border: 2px solid rgba(255, 51, 51, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .timer-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .timer-countdown {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ff3333;
+            animation: countdownGlow 0.5s ease-in-out infinite;
+        }
+
+        @keyframes countdownGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(255, 51, 51, 0.5);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 51, 51, 1);
+            }
+        }
+
+        .support-section {
+            margin: 30px 0;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .support-title {
+            font-size: 20px;
+            color: #ff9500;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .support-text {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .btn-support {
+            background: linear-gradient(135deg, #5865F2, #4752C4);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+            animation: buttonSlide 0.8s ease-out 0.5s both;
+        }
+
+        @keyframes buttonSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scaleY(0);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scaleY(1);
+            }
+        }
+
+        .btn-support:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
+            background: linear-gradient(135deg, #6d77ff, #545fd4);
+        }
+
+        .btn-support:active {
+            transform: translateY(-1px);
+        }
+
+        .discord-icon {
+            display: inline-block;
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        .additional-info {
+            background: rgba(255, 150, 0, 0.1);
+            border-left: 4px solid #ff9500;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .info-title {
+            color: #ff9500;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(255, 150, 0, 0.2);
+            margin: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            .blocked-box {
+                padding: 40px 20px;
+            }
+
+            .blocked-title {
+                font-size: 24px;
+            }
+
+            .blocked-icon {
+                font-size: 60px;
+            }
+
+            .timer-countdown {
+                font-size: 36px;
+            }
+
+            .btn-support {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="starsContainer"></div>
+
+    <div class="container">
+        <div class="blocked-box">
+            <div class="blocked-icon">🚫</div>
+
+            <h1 class="blocked-title">ACCESS BLOCKED</h1>
+
+            <p class="blocked-reason" id="blockedReason">
+                Your account access has been blocked.
+            </p>
+
+            <div class="timer-box">
+                <div class="timer-text">Redirecting in:</div>
+                <div class="timer-countdown" id="countdown">5</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="support-section">
+                <div class="support-title">💬 Need Help?</div>
+                <p class="support-text">
+                    If you believe this is a mistake or need assistance, please contact our support team via Discord.
+                </p>
+                <button class="btn-support" onclick="contactSupport()">
+                    <span class="discord-icon">💎</span> Join Discord Support
+                </button>
+            </div>
+
+            <div class="additional-info">
+                <div class="info-title">⚠️ Why was I blocked?</div>
+                <p>Common reasons include:</p>
+                <ul style="margin-top: 8px; margin-left: 20px;">
+                    <li>Account has been blocked by administrator</li>
+                    <li>Hardware ID (HWID) does not match</li>
+                    <li>Device is not authorized for this account</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let countdown = 5;
+
+        // Generate random stars
+        function generateStars() {
+            const starsContainer = document.getElementById('starsContainer');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 2 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+
+            // Add glowing lines
+            for (let i = 0; i < 3; i++) {
+                const line = document.createElement('div');
+                line.className = 'glowing-line';
+                line.style.width = '2px';
+                line.style.height = '200px';
+                line.style.left = Math.random() * 100 + '%';
+                line.style.animationDelay = i * 2 + 's';
+                starsContainer.appendChild(line);
+            }
+        }
+
+        function getBlockedReason() {
+            const reason = sessionStorage.getItem('blockedReason');
+            return reason || 'Your account access has been blocked.';
+        }
+
+        function updateCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            countdownElement.textContent = countdown;
+
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                redirectToLogin();
+            } else {
+                countdown--;
+            }
+        }
+
+        function redirectToLogin() {
+            sessionStorage.removeItem('blockedReason');
+            window.location.href = 'index.html';
+        }
+
+        function contactSupport() {
+            window.open('https://discord.gg/YpJt2qBSqC', '_blank');
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            generateStars();
+            
+            // Set blocked reason
+            const reasonElement = document.getElementById('blockedReason');
+            reasonElement.textContent = getBlockedReason();
+
+            // Start countdown
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        });
+
+        // Prevent going back
+        window.addEventListener('popstate', (e) => {
+            window.history.forward();
+        });
+
+        window.history.forward();
+
+        let countdownInterval;
+    </script>
+</body>
+</html>

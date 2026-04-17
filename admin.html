@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamer X Cloud - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f4b 50%, #0d1b3d 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .glowing-line {
+            position: fixed;
+            background: linear-gradient(90deg, transparent, #ff9500, transparent);
+            animation: moveLine 8s infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes moveLine {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(20, 30, 70, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 150, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            animation: slideIn 0.8s ease-out;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            animation: logoGlow 2s infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(255, 150, 0, 0.5);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 150, 0, 1);
+            }
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            background: linear-gradient(135deg, #ff9500, #ff6b00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .logo p {
+            color: #ff9500;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .btn-back {
+            padding: 10px 20px;
+            border: 2px solid #ff9500;
+            background: transparent;
+            color: #ff9500;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 150, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: rgba(20, 30, 70, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 150, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .card h2 {
+            color: #ff9500;
+            font-size: 22px;
+            margin-bottom: 25px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+
+        label {
+            display: block;
+            color: #ff9500;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid rgba(255, 150, 0, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #ff9500;
+            background: rgba(255, 150, 0, 0.1);
+            box-shadow: 0 0 20px rgba(255, 150, 0, 0.3);
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #ff9500, #ff6b00);
+            color: white;
+            animation: buttonSlide 0.6s ease-out;
+        }
+
+        @keyframes buttonSlide {
+            from {
+                opacity: 0;
+                transform: scaleY(0);
+            }
+            to {
+                opacity: 1;
+                transform: scaleY(1);
+            }
+        }
+
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 150, 0, 0.6);
+        }
+
+        .btn-add:active {
+            transform: translateY(-1px);
+        }
+
+        .users-list {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .user-item {
+            background: rgba(255, 150, 0, 0.1);
+            border-left: 4px solid #ff9500;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease-out;
+            transition: all 0.3s ease;
+        }
+
+        .user-item:hover {
+            background: rgba(255, 150, 0, 0.15);
+            transform: translateX(5px);
+        }
+
+        .user-item.blocked {
+            background: rgba(255, 51, 51, 0.1);
+            border-left-color: #ff3333;
+            opacity: 0.7;
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-id {
+            color: #ff9500;
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .user-pass {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .user-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .user-status.active {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+        }
+
+        .user-status.blocked {
+            background: rgba(255, 51, 51, 0.2);
+            color: #ff3333;
+        }
+
+        .user-status.locked {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .user-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-action {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .btn-block {
+            background: linear-gradient(135deg, #ff3333, #cc0000);
+            color: white;
+        }
+
+        .btn-block.unblock {
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            color: #000;
+        }
+
+        .btn-lock {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: white;
+        }
+
+        .btn-unlock {
+            background: rgba(255, 150, 0, 0.2);
+            color: #ff9500;
+            border: 1px solid #ff9500;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ff3333, #cc0000);
+            color: white;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 150, 0, 0.3);
+        }
+
+        .btn-action:active {
+            transform: translateY(0);
+        }
+
+        .lock-indicator {
+            font-size: 11px;
+            color: #ffc107;
+            margin-top: 5px;
+        }
+
+        /* SEARCH BAR STYLES */
+        .search-container {
+            margin-bottom: 20px;
+            animation: slideInDown 0.6s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 2px solid rgba(255, 150, 0, 0.3);
+            border-radius: 25px;
+            background: rgba(255, 150, 0, 0.05);
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 150, 0, 0.6);
+        }
+
+        .search-input:focus {
+            border-color: #ff9500;
+            background: rgba(255, 150, 0, 0.1);
+            box-shadow: 0 0 20px rgba(255, 150, 0, 0.3), inset 0 0 10px rgba(255, 150, 0, 0.1);
+            padding-left: 40px;
+        }
+
+        .search-highlight {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 25px;
+            background: linear-gradient(90deg, transparent, rgba(255, 150, 0, 0.2), transparent);
+            pointer-events: none;
+            animation: searchGlow 2s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes searchGlow {
+            0%, 100% {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(100%);
+            }
+        }
+
+        .search-results-counter {
+            text-align: right;
+            font-size: 12px;
+            color: rgba(255, 150, 0, 0.8);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .user-item.hidden {
+            display: none;
+        }
+
+        .user-item.show {
+            animation: slideInUser 0.3s ease-out;
+        }
+
+        @keyframes slideInUser {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 150, 0, 0.6);
+            font-size: 14px;
+        }
+
+        .no-results-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            animation: bounce 0.6s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .error {
+            color: #ff3333;
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .success {
+            color: #00d4ff;
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .stat-box {
+            background: rgba(255, 150, 0, 0.1);
+            border: 2px solid rgba(255, 150, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ff9500;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 150, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 150, 0, 0.5);
+            border-radius: 10px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 150, 0, 0.8);
+        }
+
+        .users-list {
+            scrollbar-color: rgba(255, 150, 0, 0.5) rgba(255, 150, 0, 0.1);
+            scrollbar-width: thin;
+        }
+
+        .key-item {
+            background: rgba(100, 200, 255, 0.1);
+            border-left: 4px solid #64c8ff;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease-out;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .key-item:hover {
+            background: rgba(100, 200, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .key-item.expired {
+            background: rgba(255, 100, 100, 0.1);
+            border-left-color: #ff6464;
+            opacity: 0.7;
+        }
+
+        .key-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .key-info {
+            flex: 1;
+        }
+
+        .key-code {
+            color: #64c8ff;
+            font-weight: bold;
+            word-break: break-all;
+        }
+
+        .key-username {
+            color: #ff9500;
+            margin: 5px 0;
+        }
+
+        .key-expiry {
+            color: rgba(255, 200, 100, 0.8);
+            font-size: 11px;
+        }
+
+        .key-uses {
+            color: rgba(100, 200, 255, 0.8);
+            font-size: 11px;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 150, 0, 0.2);
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            color: #ff9500;
+        }
+
+        .tab-button.active {
+            color: #ff9500;
+            border-bottom-color: #ff9500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header, .card {
+                padding: 20px;
+            }
+
+            .logo h1 {
+                font-size: 22px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .tabs-container {
+                flex-wrap: wrap;
+            }
+
+            .tab-button {
+                padding: 10px 15px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="starsContainer"></div>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">
+                <h1>⚙️ ADMIN DASHBOARD</h1>
+                <p>Owner Control Panel</p>
+            </div>
+            <a href="admin-login.html" class="btn-back" onclick="handleLogout(); return false;">🔓 Logout</a>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="content">
+            <!-- ADD USER CARD -->
+            <div class="card">
+                <h2>➕ Add New User</h2>
+
+                <form id="adminForm" onsubmit="handleAddUser(event)">
+                    <div class="form-group">
+                        <label for="adminUsername">Username</label>
+                        <input type="text" id="adminUsername" placeholder="Enter username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adminPassword">Password</label>
+                        <input type="password" id="adminPassword" placeholder="Enter password" required>
+                    </div>
+
+                    <button type="submit" class="btn-add">🚀 Create User</button>
+
+                    <div id="adminError" class="error"></div>
+                    <div id="adminSuccess" class="success"></div>
+                </form>
+
+                <!-- STATS -->
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-number" id="totalUsers">3</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="activeUsers">3</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- USERS LIST CARD -->
+            <div class="card">
+                <h2>👥 User & License Management</h2>
+
+                <!-- TABS -->
+                <div class="tabs-container">
+                    <button class="tab-button active" onclick="switchTab('users-tab', this)">👥 Users</button>
+                    <button class="tab-button" onclick="switchTab('keys-tab', this)">🔑 License Keys</button>
+                </div>
+
+                <!-- USERS TAB -->
+                <div id="users-tab" class="tab-content active">
+                    <!-- SEARCH BAR -->
+                    <div class="search-container">
+                        <div class="search-wrapper">
+                            <input 
+                                type="text" 
+                                id="searchInput" 
+                                class="search-input" 
+                                placeholder="🔍 Search by username..."
+                                onkeyup="filterUsers()"
+                            >
+                            <div class="search-highlight"></div>
+                        </div>
+                        <div class="search-results-counter">
+                            Found: <span id="resultsCount">0</span> users
+                        </div>
+                    </div>
+
+                    <div class="users-list scrollbar" id="usersList"></div>
+                </div>
+
+                <!-- LICENSE KEYS TAB -->
+                <div id="keys-tab" class="tab-content">
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: #64c8ff; margin-bottom: 15px;">Generate License Key</h3>
+                        <div class="form-group">
+                            <label for="keyUsername">Username</label>
+                            <input type="text" id="keyUsername" placeholder="Select a user or enter username">
+                        </div>
+                        <div class="form-group">
+                            <label for="keyExpiry">Days Until Expiry</label>
+                            <input type="number" id="keyExpiry" placeholder="30" value="30" min="1" max="365">
+                        </div>
+                        <div class="form-group">
+                            <label for="keyMaxUses">Max Uses (0 = unlimited)</label>
+                            <input type="number" id="keyMaxUses" placeholder="0" value="0" min="0">
+                        </div>
+                        <button onclick="generateNewKey()" class="btn-add">🔑 Generate Key</button>
+                        <div id="keyGenerateMessage" style="margin-top: 10px;"></div>
+                    </div>
+
+                    <h3 style="color: #64c8ff; margin-top: 25px; margin-bottom: 15px;">Active License Keys</h3>
+                    <div class="users-list scrollbar" id="keysList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize users with default credentials
+        let users = JSON.parse(localStorage.getItem('streamerXCloudUsers')) || [
+            { id: 'admin', password: 'admin123', blocked: false, hwidLock: false, deviceLock: false, lockedHwid: null, lockedDevice: null, loginSessions: [], tiers: { lite: true, pro: true, max: true, ultra: true } },
+            { id: 'streamer', password: 'stream456', blocked: false, hwidLock: false, deviceLock: false, lockedHwid: null, lockedDevice: null, loginSessions: [], tiers: { lite: true, pro: false, max: false, ultra: false } },
+            { id: 'user', password: 'pass789', blocked: false, hwidLock: false, deviceLock: false, lockedHwid: null, lockedDevice: null, loginSessions: [], tiers: { lite: true, pro: false, max: false, ultra: false } }
+        ];
+
+        // Initialize license keys from API (bot-generated keys)
+        let licenseKeys = [];
+        
+        async function loadKeysFromAPI() {
+            try {
+                const response = await fetch('/api/keys');
+                if (response.ok) {
+                    licenseKeys = await response.json();
+                    console.log('✓ Loaded ' + licenseKeys.length + ' keys from Discord bot');
+                    displayKeys();
+                } else {
+                    throw new Error('Failed to fetch keys');
+                }
+            } catch (error) {
+                console.warn('⚠️ Could not load keys from server, using localStorage:', error);
+                licenseKeys = JSON.parse(localStorage.getItem('streamerXCloudLicenseKeys')) || [];
+                displayKeys();
+            }
+        }
+        
+        // Load keys when page loads
+        loadKeysFromAPI();
+
+        function switchTab(tabName, button) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            button.classList.add('active');
+
+            // Refresh content
+            if (tabName === 'users-tab') {
+                displayUsers();
+            } else if (tabName === 'keys-tab') {
+                displayKeys();
+            }
+        }
+
+        function generateNewKey() {
+            const username = document.getElementById('keyUsername').value.trim();
+            const days = parseInt(document.getElementById('keyExpiry').value) || 30;
+            const maxUses = parseInt(document.getElementById('keyMaxUses').value) || 0;
+            const msgDiv = document.getElementById('keyGenerateMessage');
+
+            msgDiv.textContent = '';
+
+            if (!username) {
+                msgDiv.innerHTML = '<span class="error">✗ Please enter a username</span>';
+                return;
+            }
+
+            // Generate key: STX-XXXXX-XXXXX-XXXXX-XXXX-DD-HH
+            const timestamp = Date.now().toString(16).toUpperCase();
+            const random1 = Math.random().toString(36).substr(2, 5).toUpperCase();
+            const random2 = Math.random().toString(36).substr(2, 5).toUpperCase();
+            const random3 = Math.random().toString(36).substr(2, 5).toUpperCase();
+            const random4 = Math.random().toString(36).substr(2, 4).toUpperCase();
+
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + days);
+
+            const keyCode = `STX-${random1}-${random2}-${random3}-${random4}-${expiryDate.getFullYear()}-${String(expiryDate.getMonth() + 1).padStart(2, '0')}`;
+
+            const newKey = {
+                key: keyCode,
+                username: username,
+                createdAt: new Date().toISOString(),
+                expiresAt: expiryDate.toISOString(),
+                uses: 0,
+                maxUses: maxUses,
+                active: true
+            };
+
+            licenseKeys.push(newKey);
+            localStorage.setItem('streamerXCloudLicenseKeys', JSON.stringify(licenseKeys));
+
+            msgDiv.innerHTML = `<span class="success">✓ Key generated successfully!</span>`;
+            document.getElementById('keyUsername').value = '';
+            document.getElementById('keyExpiry').value = '30';
+            document.getElementById('keyMaxUses').value = '0';
+
+            setTimeout(() => {
+                msgDiv.textContent = '';
+                displayKeys();
+            }, 2000);
+        }
+
+        function displayKeys() {
+            const keysList = document.getElementById('keysList');
+            keysList.innerHTML = '';
+
+            if (licenseKeys.length === 0) {
+                keysList.innerHTML = '<p style="color: #64c8ff; text-align: center; padding: 20px;">No license keys generated yet</p>';
+                return;
+            }
+
+            licenseKeys.forEach((key, index) => {
+                const isExpired = new Date(key.expiresAt) < new Date();
+                const isMaxUsesReached = key.maxUses > 0 && key.uses >= key.maxUses;
+                
+                // Format usage history
+                let usageHistoryHTML = '';
+                if (key.usageHistory && key.usageHistory.length > 0) {
+                    usageHistoryHTML = '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255, 150, 0, 0.2);"><strong style="color: #ff9500;">📊 Usage History (Last 5):</strong><div style="margin-top: 8px; font-size: 12px;">';
+                    const recentUsage = key.usageHistory.slice(-5).reverse();
+                    recentUsage.forEach(usage => {
+                        usageHistoryHTML += `<div style="color: rgba(100, 200, 255, 0.8); margin: 4px 0;">👤 ${usage.checkedBy} • ${new Date(usage.checkedAt).toLocaleString()}</div>`;
+                    });
+                    usageHistoryHTML += '</div></div>';
+                }
+
+                const keyItem = document.createElement('div');
+                keyItem.className = `key-item ${isExpired ? 'expired' : ''} show`;
+                keyItem.innerHTML = `
+                    <div class="key-header">
+                        <div class="key-info" style="flex: 1;">
+                            <div class="key-code">🔑 ${key.key}</div>
+                            <div class="key-username">👤 Username: <strong>${key.username}</strong></div>
+                            <div class="key-expiry">📅 Expires: ${new Date(key.expiresAt).toLocaleDateString()} ${isExpired ? '(EXPIRED)' : ''}</div>
+                            <div class="key-uses">📊 Uses: ${key.uses}${key.maxUses > 0 ? '/' + key.maxUses : '/∞'} ${isMaxUsesReached ? '(LIMIT REACHED)' : ''}</div>
+                            <div style="color: rgba(100, 200, 255, 0.8); font-size: 11px; margin-top: 5px;">Created by: ${key.createdBy || 'bot'} • ${new Date(key.createdAt).toLocaleString()}</div>
+                            ${usageHistoryHTML}
+                        </div>
+                        <button type="button" class="btn-action btn-delete" onclick="revokeKey(${index})" style="margin-left: 10px; white-space: nowrap;">🗑️ Revoke</button>
+                    </div>
+                `;
+                keysList.appendChild(keyItem);
+            });
+        }
+
+        // Generate random stars
+        function generateStars() {
+            const starsContainer = document.getElementById('starsContainer');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 2 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+
+            // Add glowing lines
+            for (let i = 0; i < 3; i++) {
+                const line = document.createElement('div');
+                line.className = 'glowing-line';
+                line.style.width = '2px';
+                line.style.height = '200px';
+                line.style.left = Math.random() * 100 + '%';
+                line.style.animationDelay = i * 2 + 's';
+                starsContainer.appendChild(line);
+            }
+        }
+
+        function handleAddUser(event) {
+            event.preventDefault();
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            const errorDiv = document.getElementById('adminError');
+            const successDiv = document.getElementById('adminSuccess');
+
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+
+            // Validation
+            if (username.length < 3) {
+                errorDiv.textContent = '✗ Username must be at least 3 characters';
+                return;
+            }
+
+            if (password.length < 6) {
+                errorDiv.textContent = '✗ Password must be at least 6 characters';
+                return;
+            }
+
+            if (users.some(u => u.id === username)) {
+                errorDiv.textContent = '✗ User already exists';
+                return;
+            }
+
+            users.push({ id: username, password: password, blocked: false, hwidLock: false, deviceLock: false, lockedHwid: null, lockedDevice: null, loginSessions: [], tiers: { lite: true, pro: false, max: false, ultra: false } });
+            localStorage.setItem('streamerXCloudUsers', JSON.stringify(users));
+            successDiv.textContent = '✓ User created successfully!';
+
+            document.getElementById('adminForm').reset();
+            displayUsers();
+            updateStats();
+
+            setTimeout(() => {
+                successDiv.textContent = '';
+            }, 2000);
+        }
+
+        function displayUsers() {
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+
+            if (users.length === 0) {
+                usersList.innerHTML = '<p style="color: #ff9500; text-align: center; padding: 20px;">No users found</p>';
+                return;
+            }
+
+            users.forEach((user, index) => {
+                const isBlocked = user.blocked;
+                const isHwidLocked = user.hwidLock;
+                const isDeviceLocked = user.deviceLock;
+                const tiers = user.tiers || { lite: false, pro: false, max: false, ultra: false };
+
+                const userItem = document.createElement('div');
+                userItem.className = `user-item ${isBlocked ? 'blocked' : ''} show`;
+                userItem.setAttribute('data-username', user.id.toLowerCase());
+                userItem.innerHTML = `
+                    <div class="user-header">
+                        <div class="user-info">
+                            <div class="user-id">👤 ${user.id}</div>
+                            <div class="user-pass">🔐 ${user.password}</div>
+                            <div class="user-status ${isBlocked ? 'blocked' : 'active'}">
+                                ${isBlocked ? '🚫 BLOCKED' : '✅ ACTIVE'}
+                            </div>
+                            ${isHwidLocked ? '<div class="lock-indicator">🔒 HWID Locked</div>' : ''}
+                            ${isDeviceLocked ? '<div class="lock-indicator">🔐 Device Locked</div>' : ''}
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        <button type="button" class="btn-action ${isBlocked ? 'btn-block unblock' : 'btn-block'}" 
+                                onclick="toggleBlockUser(${index})">
+                            ${isBlocked ? '🔓 Unblock' : '🚫 Block'}
+                        </button>
+                        <button type="button" class="btn-action ${isHwidLocked ? 'btn-unlock' : 'btn-lock'}" 
+                                onclick="toggleHwidLock(${index})">
+                            ${isHwidLocked ? '🔓 HWID Unlock' : '🔒 HWID Lock'}
+                        </button>
+                        <button type="button" class="btn-action ${isDeviceLocked ? 'btn-unlock' : 'btn-lock'}" 
+                                onclick="toggleDeviceLock(${index})">
+                            ${isDeviceLocked ? '🔓 Device Unlock' : '🔐 Device Lock'}
+                        </button>
+                        <button type="button" class="btn-action btn-delete" onclick="deleteUser(${index})">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                    <div class="tier-management" style="margin-top: 15px; padding: 15px; background: rgba(0, 212, 255, 0.1); border-radius: 8px;">
+                        <div style="color: #00d4ff; font-size: 12px; margin-bottom: 10px; font-weight: bold;">⭐ TIER ACCESS:</div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #00d4ff; font-size: 12px;">
+                                <input type="checkbox" ${tiers.lite ? 'checked' : ''} onchange="toggleUserTier(${index}, 'lite')" style="cursor: pointer;">
+                                <span>💎 LITE</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #00d4ff; font-size: 12px;">
+                                <input type="checkbox" ${tiers.pro ? 'checked' : ''} onchange="toggleUserTier(${index}, 'pro')" style="cursor: pointer;">
+                                <span>🔥 PRO</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #00d4ff; font-size: 12px;">
+                                <input type="checkbox" ${tiers.max ? 'checked' : ''} onchange="toggleUserTier(${index}, 'max')" style="cursor: pointer;">
+                                <span>⚡ MAX</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #00d4ff; font-size: 12px;">
+                                <input type="checkbox" ${tiers.ultra ? 'checked' : ''} onchange="toggleUserTier(${index}, 'ultra')" style="cursor: pointer;">
+                                <span>👑 ULTRA</span>
+                            </label>
+                        </div>
+                    </div>
+                `;
+                usersList.appendChild(userItem);
+            });
+
+            updateResultsCount();
+        }
+
+        function filterUsers() {
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput.value.toLowerCase();
+            const userItems = document.querySelectorAll('.user-item');
+            let visibleCount = 0;
+
+            if (searchTerm === '') {
+                // Show all users if search is empty
+                userItems.forEach(item => {
+                    item.classList.remove('hidden');
+                    item.classList.add('show');
+                    visibleCount++;
+                });
+            } else {
+                userItems.forEach(item => {
+                    const username = item.getAttribute('data-username');
+                    if (username.includes(searchTerm)) {
+                        item.classList.remove('hidden');
+                        item.classList.add('show');
+                        visibleCount++;
+                    } else {
+                        item.classList.add('hidden');
+                        item.classList.remove('show');
+                    }
+                });
+            }
+
+            // Show "no results" message if needed
+            const usersList = document.getElementById('usersList');
+            const noResultsMsg = usersList.querySelector('.no-results');
+            
+            if (visibleCount === 0 && searchTerm !== '') {
+                if (!noResultsMsg) {
+                    const msg = document.createElement('div');
+                    msg.className = 'no-results';
+                    msg.innerHTML = `
+                        <div class="no-results-icon">🔍</div>
+                        <div>No users found matching "<strong>${searchTerm}</strong>"</div>
+                    `;
+                    usersList.appendChild(msg);
+                }
+            } else if (noResultsMsg) {
+                noResultsMsg.remove();
+            }
+
+            updateResultsCount();
+        }
+
+        function updateResultsCount() {
+            const visibleUsers = document.querySelectorAll('.user-item:not(.hidden)').length;
+            document.getElementById('resultsCount').textContent = visibleUsers;
+        }
+
+        function toggleBlockUser(index) {
+            users[index].blocked = !users[index].blocked;
+            const action = users[index].blocked ? 'blocked' : 'unblocked';
+            localStorage.setItem('streamerXCloudUsers', JSON.stringify(users));
+            displayUsers();
+            alert(`✓ User "${users[index].id}" has been ${action}!`);
+        }
+
+        function toggleHwidLock(index) {
+            if (!users[index].hwidLock) {
+                users[index].hwidLock = true;
+                users[index].lockedHwid = generateHwid();
+                alert(`✓ HWID Locked for "${users[index].id}"\nOnly devices with HWID: ${users[index].lockedHwid.substring(0, 16)}... can login`);
+            } else {
+                users[index].hwidLock = false;
+                users[index].lockedHwid = null;
+                alert(`✓ HWID Lock removed for "${users[index].id}"`);
+            }
+            localStorage.setItem('streamerXCloudUsers', JSON.stringify(users));
+            displayUsers();
+        }
+
+        function toggleDeviceLock(index) {
+            if (!users[index].deviceLock) {
+                users[index].deviceLock = true;
+                users[index].lockedDevice = generateDeviceId();
+                alert(`✓ Device Locked for "${users[index].id}"\nOnly the registered device can login`);
+            } else {
+                users[index].deviceLock = false;
+                users[index].lockedDevice = null;
+                alert(`✓ Device Lock removed for "${users[index].id}"`);
+            }
+            localStorage.setItem('streamerXCloudUsers', JSON.stringify(users));
+            displayUsers();
+        }
+
+        function toggleUserTier(index, tier) {
+            if (!users[index].tiers) {
+                users[index].tiers = { lite: false, pro: false, max: false, ultra: false };
+            }
+            users[index].tiers[tier] = !users[index].tiers[tier];
+            const action = users[index].tiers[tier] ? 'enabled' : 'disabled';
+            const tierNames = { lite: '💎 LITE', pro: '🔥 PRO', max: '⚡ MAX', ultra: '👑 ULTRA' };
+            localStorage.setItem('streamerXCloudUsers', JSON.stringify(users));
+            displayUsers();
+            console.log(`Tier ${tierNames[tier]} ${action} for user "${users[index].id}"`);
+        }
+
+        function deleteUser(index) {
+            if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                const deletedUser = users[index].id;
+                users.splice(index, 1);
+                localStorage.setItem('streamerXCloudUsers', JSON.stringify(users));
+                displayUsers();
+                updateStats();
+                alert(`✓ User "${deletedUser}" has been deleted!`);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('activeUsers').textContent = users.length;
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('adminUser');
+            window.location.href = 'admin-login.html';
+        }
+
+        function generateHwid() {
+            return 'HWID-' + Math.random().toString(36).substr(2, 9).toUpperCase() + '-' + Date.now();
+        }
+
+        function generateDeviceId() {
+            return 'DEV-' + Math.random().toString(36).substr(2, 9).toUpperCase() + '-' + Date.now();
+        }
+
+        function revokeKey(index) {
+            if (confirm('Are you sure you want to revoke this license key?')) {
+                licenseKeys.splice(index, 1);
+                localStorage.setItem('streamerXCloudLicenseKeys', JSON.stringify(licenseKeys));
+                displayKeys();
+                alert('✓ License key revoked successfully!');
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            // Check if admin is logged in
+            const isAdminLoggedIn = localStorage.getItem('adminLoggedIn');
+            if (!isAdminLoggedIn) {
+                alert('⚠️ Access Denied! Please login as admin first.');
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
+            generateStars();
+            displayUsers();
+            updateStats();
+        });
+    </script>
+</body>
+</html>

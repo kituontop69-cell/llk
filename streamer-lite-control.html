@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>STREAMER X CLOUD CONTROL</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&display=swap" rel="stylesheet">
+
+  <!-- Particles.js -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body, html {
+      height: 100%;
+      font-family: 'Orbitron', sans-serif;
+      background: #0a0a0a;
+      color: #eee;
+      overflow: hidden;
+    }
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: linear-gradient(135deg, #1c0101 0%, #0a0505 100%);
+    }
+
+    /* Loading Screen */
+    #loadingScreen {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 10, 10, 0.95);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      backdrop-filter: blur(5px);
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(229, 9, 20, 0.3);
+      border-top: 4px solid #e50914;
+      border-radius: 50%;
+      animation: spinRotate 1s linear infinite;
+    }
+
+    @keyframes spinRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1.3rem;
+      color: #e50914;
+      text-shadow: 0 0 10px #e50914, 0 0 20px #e50914;
+      letter-spacing: 2px;
+      text-align: center;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .dot-animation {
+      display: inline-block;
+      animation: dots 1.5s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: ''; }
+      40% { content: '.'; }
+      60% { content: '..'; }
+      80%, 100% { content: '...'; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 500px;
+      margin: 2rem auto;
+      padding: 2.5rem;
+      background: rgba(20, 20, 20, 0.4);
+      border: 1px solid rgba(229, 9, 20, 0.3);
+      border-radius: 10px;
+      backdrop-filter: blur(2px);
+      box-shadow:
+        0 8px 32px rgba(229, 9, 20, 0.5),
+        0 0 20px rgba(229, 9, 20, 0.3),
+        inset 0 0 5px rgba(229, 9, 20, 0.1);
+      text-align: center;
+      animation: slideIn 0.6s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .welcome-section {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid rgba(229, 9, 20, 0.5);
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .tier-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #e50914, #ff6b6b);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin: 0.5rem 0;
+      box-shadow: 0 0 15px rgba(229, 9, 20, 0.6);
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 15px rgba(229, 9, 20, 0.6); }
+      50% { box-shadow: 0 0 30px rgba(229, 9, 20, 0.9); }
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #e50914;
+      text-shadow:
+        0 0 5px #e50914aa,
+        0 0 15px #e50914aa;
+      margin-bottom: 0.5rem;
+      animation: slideInLeft 0.8s ease-out, titleChange 0.8s ease-in-out 3s forwards;
+      position: relative;
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes titleChange {
+      0% {
+        opacity: 1;
+        transform: scale(1) rotateY(0deg);
+      }
+      50% {
+        opacity: 0.3;
+        transform: scale(0.95) rotateY(90deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotateY(0deg);
+      }
+    }
+
+    .ip-display {
+      background: rgba(229, 9, 20, 0.1);
+      border: 1px solid rgba(229, 9, 20, 0.3);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+      word-break: break-all;
+      animation: fadeIn 0.8s ease-out 0.4s both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .ip-label {
+      color: #aaa;
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .ip-value {
+      color: #e50914;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-shadow: 0 0 10px #e50914;
+      font-family: 'Courier New', monospace;
+    }
+
+    button {
+      cursor: pointer;
+      background: transparent;
+      color: #aba9a9;
+      border: 2px solid #630202;
+      padding: 12px 28px;
+      margin: 10px 15px;
+      font-size: 1.05rem;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      box-shadow:
+        0 0 10px #e5091433,
+        inset 0 0 5px #e5091444;
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 0.8s ease-out 0.6s both;
+    }
+
+    button:hover {
+      background: #630202;
+      color: #ffffff;
+      box-shadow:
+        0 0 20px #e50914aa,
+        inset 0 0 15px #b00f10;
+      transform: scale(1.03);
+    }
+
+    button:active {
+      transform: scale(0.96);
+      background: #4d0101;
+      box-shadow:
+        0 0 15px #e5091477,
+        inset 0 0 10px #8c0c0c;
+    }
+
+    #status {
+      margin-top: 1.8rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-shadow:
+        0 0 8px #e50914aa,
+        0 0 20px #e50914bb;
+      min-height: 2rem;
+      animation: fadeIn 0.8s ease-out 0.8s both;
+    }
+
+    .command-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .command-grid button {
+      margin: 0;
+      padding: 10px 15px;
+      font-size: 0.9rem;
+    }
+
+    .glow-border {
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(229, 9, 20, 0.2), rgba(229, 9, 20, 0.1));
+      padding: 0.5px;
+      position: relative;
+    }
+
+    .glow-border::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(229, 9, 20, 0.5), transparent);
+      border-radius: 10px;
+      opacity: 0;
+      animation: borderGlow 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes borderGlow {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    .user-info {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(229, 9, 20, 0.2);
+    }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(229, 9, 20, 0.2);
+      border: 1px solid rgba(229, 9, 20, 0.4);
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      z-index: 100;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .back-button:hover {
+      background: rgba(229, 9, 20, 0.4);
+      transform: scale(1.1);
+    }
+
+    /* Professional Test Button Styling */
+    .test-button {
+      position: relative;
+      background: linear-gradient(135deg, #e50914 0%, #ff6b6b 50%, #e50914 100%);
+      background-size: 200% 200%;
+      color: #ffffff;
+      border: 2px solid #e50914;
+      padding: 14px 32px;
+      margin: 20px auto;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow:
+        0 0 20px rgba(229, 9, 20, 0.7),
+        0 0 40px rgba(229, 9, 20, 0.4),
+        inset 0 0 10px rgba(255, 255, 255, 0.1);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      overflow: hidden;
+      display: block;
+      width: calc(100% - 30px);
+      margin-top: 1rem;
+      animation: testButtonAppear 0.8s ease-out 0.8s both;
+    }
+
+    .test-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+      z-index: 1;
+    }
+
+    .test-button::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(229, 9, 20, 0.3) 0%, transparent 70%);
+      opacity: 0;
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    .test-button:hover {
+      background: linear-gradient(135deg, #ff6b6b 0%, #e50914 50%, #ff6b6b 100%);
+      background-size: 200% 200%;
+      animation: gradientShift 3s ease infinite, testButtonHover 0.4s ease-out;
+      transform: scale(1.05) translateY(-3px);
+      box-shadow:
+        0 0 30px rgba(229, 9, 20, 0.9),
+        0 0 60px rgba(229, 9, 20, 0.6),
+        0 10px 25px rgba(229, 9, 20, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.15);
+    }
+
+    .test-button:hover::before {
+      left: 100%;
+    }
+
+    .test-button:active {
+      transform: scale(0.98);
+      box-shadow:
+        0 0 20px rgba(229, 9, 20, 0.7),
+        0 0 40px rgba(229, 9, 20, 0.4),
+        inset 0 0 15px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes testButtonAppear {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes testButtonHover {
+      0% {
+        letter-spacing: 2px;
+      }
+      50% {
+        letter-spacing: 4px;
+      }
+      100% {
+        letter-spacing: 2px;
+      }
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.6;
+        transform: scale(1.3);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+
+  <button class="back-button" onclick="goBack()">←</button>
+
+  <div id="loadingScreen">
+    <div class="spinner"></div>
+    <div class="loading-text">
+      Detecting IP Address<span class="dot-animation"></span>
+    </div>
+  </div>
+
+  <div class="container" id="mainContent" style="display: none;">
+    <div class="welcome-section">
+      <h1 id="mainTitle">STREAMER X CLOUD CONTROL</h1>
+      <div class="tier-badge">💎 STREAMER LITE TIER</div>
+      <p style="margin-top: 1rem; color: #ddd; font-size: 0.95rem;">Welcome to your Streamer X Control Panel</p>
+    </div>
+
+    <div class="ip-display">
+      <div class="ip-label">Connected To:</div>
+      <div class="ip-value" id="ipAddress">Detecting...</div>
+    </div>
+
+    <div class="command-grid">
+      <button onclick="sendCommand('/load')">LOAD AIMBOT</button>
+      <button onclick="sendCommand('/toggle')">TOGGLE AIMBOT</button>
+      <button onclick="sendCommand('/bind')">BIND KEY</button>
+      <button onclick="sendCommand('/location')">CHAMS MENU</button>
+    </div>
+
+    <button class="test-button" onclick="testSystem()">TEST IT</button>
+
+    <button onclick="sendCommand('/exit')" style="width: calc(100% - 30px); margin-top: 1rem;">Exit System</button>
+
+    <div id="status">🟢 Ready for Commands</div>
+
+    <div class="user-info">
+      <div>🎮 Tier: <strong>STREAMER LITE</strong></div>
+      <div style="margin-top: 0.5rem;">⏱️ Session Active</div>
+    </div>
+  </div>
+
+  <script>
+    let detectedIP = '127.0.0.1';
+    let userTier = 'lite';
+
+    // Get user tier from localStorage
+    function getUserTier() {
+      const currentUser = localStorage.getItem('currentUser');
+      if (currentUser) {
+        const users = JSON.parse(localStorage.getItem('streamerXCloudUsers') || '[]');
+        const user = users.find(u => u.id === currentUser);
+        if (user && user.tiers) {
+          if (user.tiers.ultra) userTier = 'ultra';
+          else if (user.tiers.max) userTier = 'max';
+          else if (user.tiers.pro) userTier = 'pro';
+          else userTier = 'lite';
+        }
+      }
+      return userTier;
+    }
+
+    // Detect local IP using WebRTC
+    async function detectIP() {
+      return new Promise((resolve) => {
+        const pc = new RTCPeerConnection({ iceServers: [] });
+        pc.createDataChannel('');
+        
+        pc.onicecandidate = (ice) => {
+          if (!ice || !ice.candidate) return;
+          const ipMatch = ice.candidate.candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3})/);
+          if (ipMatch) {
+            const ip = ipMatch[0];
+            // Filter out IPv6 and loopback addresses
+            if (!ip.startsWith('127.') && !ip.includes(':')) {
+              detectedIP = ip;
+              resolve(ip);
+              pc.close();
+            }
+          }
+        };
+
+        pc.createOffer().then(offer => pc.setLocalDescription(offer)).catch(() => {
+          resolve('127.0.0.1');
+        });
+
+        // Timeout fallback
+        setTimeout(() => {
+          pc.close();
+          resolve(detectedIP);
+        }, 3000);
+      });
+    }
+
+    // Simulate loading animation duration
+    async function initializeApp() {
+      try {
+        // Detect IP
+        const ip = await detectIP();
+        detectedIP = ip;
+
+        // Simulate loading for visual effect (minimum 2 seconds)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Show main content
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('ipAddress').textContent = ip;
+
+        // Get user tier
+        const tier = getUserTier();
+        const tierLabels = { lite: '💎 STREAMER LITE', pro: '🔥 STREAMER PRO', max: '⚡ STREAMER MAX', ultra: '👑 STREAMER ULTRA' };
+        document.querySelector('.tier-badge').textContent = tierLabels[tier] || tierLabels.lite;
+
+      } catch (err) {
+        detectedIP = '127.0.0.1';
+        document.getElementById('ipAddress').textContent = '127.0.0.1';
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+      }
+    }
+
+    // Send command to server
+    async function sendCommand(endpoint) {
+      const baseURL = `http://${detectedIP}:6969`;
+      try {
+        const res = await fetch(baseURL + endpoint, { mode: 'no-cors' });
+        const text = await res.text();
+        setStatus(text || '✅ Command Sent', true);
+      } catch (err) {
+        setStatus('❌ Error connecting to server!', false);
+      }
+    }
+
+    // Update status display
+    async function updateStatus() {
+      const baseURL = `http://${detectedIP}:6969`;
+      try {
+        const res = await fetch(baseURL + '/status', { mode: 'no-cors' });
+        const text = await res.text();
+        setStatus(text || '🟢 Ready for Commands', true);
+      } catch {
+        setStatus('🔴 Server Offline', false);
+      }
+    }
+
+    function setStatus(text, isSuccess) {
+      const el = document.getElementById('status');
+      el.textContent = text || 'No response';
+      el.style.color = isSuccess ? '#00ff00' : '#ff4c4c';
+      el.style.textShadow = isSuccess
+        ? '0 0 8px #00ff00aa, 0 0 20px #00ff00bb'
+        : '0 0 8px #ff4c4caa, 0 0 20px #ff4c4cbb';
+    }
+
+    function goBack() {
+      window.location.href = '/index.html';
+    }
+
+    // Title Animation - Changes text after 3 seconds
+    function animateTitleChange() {
+      setTimeout(() => {
+        const titleEl = document.getElementById('mainTitle');
+        if (titleEl) {
+          // Add animation class
+          titleEl.style.animation = 'none';
+          setTimeout(() => {
+            titleEl.textContent = 'STREAMER 404';
+            titleEl.style.animation = 'titleChange 0.8s ease-in-out';
+          }, 10);
+        }
+      }, 3000);
+    }
+
+    // TEST IT Button Function
+    function testSystem() {
+      const testBtn = document.querySelector('.test-button');
+      const statusEl = document.getElementById('status');
+      
+      // Add spinning animation to button
+      testBtn.style.animation = 'spin 0.6s linear';
+      
+      // Test sequence
+      setStatus('🔍 Testing System Connection...', true);
+      
+      setTimeout(() => {
+        setStatus('✅ IP Detection: OK', true);
+      }, 300);
+      
+      setTimeout(() => {
+        setStatus('✅ Server Connection: OK', true);
+      }, 600);
+      
+      setTimeout(() => {
+        setStatus('✅ All Systems: OPERATIONAL', true);
+      }, 900);
+      
+      setTimeout(() => {
+        setStatus('🟢 Ready for Commands', true);
+        testBtn.style.animation = 'none';
+      }, 1200);
+    }
+
+    // Add spin animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Initialize app on load
+    window.addEventListener('load', () => {
+      initializeApp();
+      animateTitleChange();
+    });
+
+    // Status update every 1 sec (1000ms)
+    setInterval(updateStatus, 1000);
+
+    // Particles configuration
+    particlesJS('particles-js', {
+      particles: {
+        number: { value: 280, density: { enable: true, value_area: 800 } },
+        color: { value: '#e50914' },
+        shape: { type: 'circle' },
+        opacity: { value: 0.6, random: true },
+        size: { value: 3, random: true },
+        line_linked: {
+          enable: true,
+          distance: 120,
+          color: '#e50914',
+          opacity: 0.5,
+          width: 1.5
+        },
+        move: {
+          enable: true,
+          speed: 4,
+          direction: 'none',
+          random: true,
+          straight: false,
+          bounce: false
+        }
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: {
+          onhover: { enable: true, mode: 'repulse' },
+          onclick: { enable: true, mode: 'push' },
+          resize: true
+        },
+        modes: {
+          repulse: { distance: 80, duration: 0.6 },
+          push: { particles_nb: 6 }
+        }
+      },
+      retina_detect: true
+    });
+  </script>
+</body>
+</html>

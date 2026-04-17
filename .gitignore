@@ -1,0 +1,43 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# License Keys (sensitive data)
+license_keys.json
+
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Sensitive Files
+config.json (keep only config.json.example)
+.env.local
+
+# Build outputs
+dist/
+build/
+
+# Temporary files
+temp/
+tmp/
+*.tmp
