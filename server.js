@@ -48,10 +48,6 @@ server.listen(PORT, HOST, () => {
     ║  Press Ctrl+C to stop server           ║
     ╚════════════════════════════════════════╝
     `);
-    
-    // Start Discord bot after web server is running
-    console.log('⏳ Starting Discord bot...');
-    require('./discord-bot.js');
 });
 
 process.on('SIGINT', () => {
