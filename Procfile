@@ -1,3 +1,2 @@
-web-client: node server-client.js
-web-admin: node server-admin.js
+web: node server.js
 worker: node discord-bot.js
