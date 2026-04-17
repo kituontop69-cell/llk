@@ -4,8 +4,8 @@
   "description": "Discord Bot for Streamer X Cloud - License Key Management & Deployment",
   "main": "discord-bot.js",
   "scripts": {
-    "start": "node server.js & node discord-bot.js",
-    "dev": "node server.js & node discord-bot.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "keywords": [
     "discord",
