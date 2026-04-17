@@ -127,7 +127,7 @@ const server = http.createServer((req, res) => {
     }
     
     // ===== STATIC FILES =====
-    let filePath = path.join(__dirname, pathname === '/' ? 'index.html' : pathname);
+    let filePath = path.join(__dirname, pathname === '/' ? 'index.html' : pathname.substring(1));
     
     const ext = path.extname(filePath);
     let contentType = 'text/html';
