@@ -148,6 +148,32 @@ commands.push({
   ]
 });
 
+// ===== COMMAND 5: Count Keys =====
+commands.push({
+  name: 'countkeys',
+  description: 'Show total and active license key counts'
+});
+
+// ===== COMMAND 6: User Keys =====
+commands.push({
+  name: 'userkeys',
+  description: 'List all license keys for a username',
+  options: [
+    {
+      name: 'username',
+      description: 'Username to search',
+      type: 3,
+      required: true
+    }
+  ]
+});
+
+// ===== COMMAND 7: Help =====
+commands.push({
+  name: 'help',
+  description: 'Show available bot commands and usage'
+});
+
 // Register commands
 client.on('ready', async () => {
   console.log(`✓ Bot logged in as ${client.user.tag}`);
@@ -327,6 +353,75 @@ client.on('interactionCreate', async (interaction) => {
           { name: '⏰ Expires', value: keyObj.expiresAt.split('T')[0], inline: true },
           { name: '📈 Uses', value: usageText, inline: true },
           { name: '\u200b', value: isExpired ? '⚠️ This key has **EXPIRED**' : '✓ This key is **VALID**', inline: false }
+        )
+        .setFooter({ text: 'Streamer X Cloud | Key System' });
+
+      await interaction.reply({ embeds: [embed], ephemeral: true });
+    }
+
+    // ===== COUNTKEYS COMMAND =====
+    else if (interaction.commandName === 'countkeys') {
+      const totalKeys = licenseKeys.length;
+      const activeKeys = licenseKeys.filter(k => k.active && !isKeyExpired(k)).length;
+
+      const embed = new EmbedBuilder()
+        .setColor(0x0099FF)
+        .setTitle('📊 License Key Stats')
+        .setDescription('Current license key overview')
+        .addFields(
+          { name: 'Total keys', value: `${totalKeys}`, inline: true },
+          { name: 'Active keys', value: `${activeKeys}`, inline: true }
+        )
+        .setFooter({ text: 'Streamer X Cloud | Key System' });
+
+      await interaction.reply({ embeds: [embed], ephemeral: false });
+    }
+
+    // ===== USERKEYS COMMAND =====
+    else if (interaction.commandName === 'userkeys') {
+      const username = interaction.options.getString('username');
+      const userKeys = licenseKeys.filter(k => k.username.toLowerCase() === username.toLowerCase());
+
+      if (userKeys.length === 0) {
+        return await interaction.reply({ content: `❌ No keys found for user **${username}**.`, ephemeral: true });
+      }
+
+      const embed = new EmbedBuilder()
+        .setColor(0x0099FF)
+        .setTitle(`🔑 Keys for ${username}`)
+        .setDescription(`Found **${userKeys.length}** keys for this user.`)
+        .setFooter({ text: 'Streamer X Cloud | Key System' });
+
+      userKeys.slice(0, 10).forEach((key, index) => {
+        const status = key.active && !isKeyExpired(key) ? '✅ ACTIVE' : '❌ INACTIVE';
+        embed.addFields({
+          name: `${index + 1}. ${key.key}`,
+          value: `Expires: ${key.expiresAt.split('T')[0]} • Status: ${status}`,
+          inline: false
+        });
+      });
+
+      if (userKeys.length > 10) {
+        embed.addFields({ name: '\u200b', value: `...and ${userKeys.length - 10} more keys` });
+      }
+
+      await interaction.reply({ embeds: [embed], ephemeral: false });
+    }
+
+    // ===== HELP COMMAND =====
+    else if (interaction.commandName === 'help') {
+      const embed = new EmbedBuilder()
+        .setColor(0x00FF00)
+        .setTitle('🤖 Streamer X Bot Help')
+        .setDescription('Available license key commands')
+        .addFields(
+          { name: '/genkey', value: 'Generate a license key for a user', inline: false },
+          { name: '/listkeys', value: 'List all active license keys', inline: false },
+          { name: '/revokekey', value: 'Revoke a license key', inline: false },
+          { name: '/checkkey', value: 'Check license key validity', inline: false },
+          { name: '/countkeys', value: 'Show total and active license key counts', inline: false },
+          { name: '/userkeys', value: 'List all license keys for a username', inline: false },
+          { name: '/help', value: 'Show this help message', inline: false }
         )
         .setFooter({ text: 'Streamer X Cloud | Key System' });
 
